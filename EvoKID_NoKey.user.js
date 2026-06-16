@@ -852,11 +852,11 @@
                     else if (timeSinceAttack < maxCooldown) isOnCooldown = true;
                 }
 
-                if (!isTeammate) {
-                    if (isSwinging && isInThreat) {
-                        distToEnemy < dodgeTargetDist && (dodgeTargetDist = distToEnemy, dodgeTarget = enemy);
-                    }
+                if (isSwinging && isInThreat) {
+                    distToEnemy < dodgeTargetDist && (dodgeTargetDist = distToEnemy, dodgeTarget = enemy);
+                }
 
+                if (!isTeammate) {
                     if (config.punish && isInLevelRange && (isOnCooldown || isSwinging && !isInThreat)) {
                         distToEnemy < punishTargetDist && (punishTargetDist = distToEnemy, punishTarget = enemy);
                     } else if (isInLevelRange && enemyLevel < localLevel && distToEnemy < huntTargetDist) {
