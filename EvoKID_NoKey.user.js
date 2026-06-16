@@ -852,13 +852,11 @@
                     else if (timeSinceAttack < maxCooldown) isOnCooldown = true;
                 }
 
-                if (!isTeammate) {
-                    if (isSwinging && isInThreat) {
-                        distToEnemy < dodgeTargetDist && (dodgeTargetDist = distToEnemy, dodgeTarget = enemy);
-                    } else if (isInThreat && distToEnemy < dodgeTargetDist) {
-                        dodgeTargetDist = distToEnemy, dodgeTarget = enemy;
-                    }
+                if (isSwinging && isInThreat) {
+                    distToEnemy < dodgeTargetDist && (dodgeTargetDist = distToEnemy, dodgeTarget = enemy);
+                }
 
+                if (!isTeammate) {
                     if (config.punish && isInLevelRange && (isOnCooldown || isSwinging && !isInThreat)) {
                         distToEnemy < punishTargetDist && (punishTargetDist = distToEnemy, punishTarget = enemy);
                     } else if (isInLevelRange && enemyLevel < localLevel && distToEnemy < huntTargetDist) {
@@ -1033,7 +1031,15 @@
             }
 
             // Dodge & Aim logic
-            if (config.dodge && dodgeTarget) {
+            if (config.punish && punishTarget) {
+                isAimOverriding = true;
+                const punishDx = punishTarget.x - localPlayer.x,
+                    punishDy = punishTarget.y - localPlayer.y,
+                    punishDist = Math.hypot(punishDx, punishDy);
+                aimX = canvasCenterX + punishDx / punishDist * 800;
+                aimY = canvasCenterY + punishDy / punishDist * 800;
+                shouldSprint = true;
+            } else if (config.dodge && dodgeTarget) {
                 isAimOverriding = true;
                 const dodgeDx = localPlayer.x - dodgeTarget.x,
                     dodgeDy = localPlayer.y - dodgeTarget.y,
@@ -1067,14 +1073,6 @@
                 (dodgeLvl === 27 || dodgeLvl === 28) && (extraBuf += 120);
                 const inRange = dodgeDistRaw < getWeaponStats(getLevel(dodgeTarget)).distance + localRadius + extraBuf;
                 (config.sprint || isEarlyAttack || inRange || !canAttack) && (shouldSprint = true);
-            } else if (config.punish && punishTarget) {
-                isAimOverriding = true;
-                const punishDx = punishTarget.x - localPlayer.x,
-                    punishDy = punishTarget.y - localPlayer.y,
-                    punishDist = Math.hypot(punishDx, punishDy);
-                aimX = canvasCenterX + punishDx / punishDist * 800;
-                aimY = canvasCenterY + punishDy / punishDist * 800;
-                shouldSprint = true;
             } else if (config.hunt && huntTarget) {
                 isAimOverriding = true;
                 const huntDx = huntTarget.x - localPlayer.x,
